@@ -18,8 +18,6 @@ const fixData = (data) => {
     return newData;    
 }
 
-
-
 const requestData = async () => {
     const response = await fetch(coronaData);
     if(response.status === 200) {
@@ -33,16 +31,12 @@ const requestData = async () => {
 
 
 const getDataByCountry = (data, countryName) => {
-    let myCountryObj;
-    data.find((data) => {
+    const myCountry = data.find((data) => {
         if(data.country === countryName) {
-            myCountryObj = {
-                lastData: data,
-                countryName: data.country
-            }
+            return data;
         }
     });
-    return myCountryObj;
+    return myCountry;
 }
 
 
@@ -71,4 +65,46 @@ const getTotalRecovered = (data) => {
     }); 
 
     return recovered;
+}
+
+const getCountryByLetter = (letter, data) => {
+    const filteredList = [];
+    data.forEach((data) => {
+        if(data.country[0] === letter) {
+            filteredList.push(data);
+        }
+    })
+    return filteredList;
+}
+
+const renderCountryList = (countryList) => {
+
+    document.querySelector('#title').textContent = 'Lista de paises';
+    const contentEl1 = document.querySelector('#col1');
+    const contentEl2 = document.querySelector('#col2');
+    contentEl1.textContent = '';
+    
+    countryList.forEach((country) => {
+        const textEl = document.createElement('a');
+        textEl.textContent = country.country;
+        textEl.setAttribute('href','#');
+        textEl.addEventListener('click', (e) => {
+            const myCountry = countryList.find((country) => {
+                if(country.country === e.target.text) {
+                    return country;
+                }
+            });
+
+            contentEl2.innerHTML = `
+                <div class="data-container">
+                    <h5>${myCountry.country}</h5>
+                    <p>Casos confirmados: ${myCountry.confirmed}</p>
+                    <p>Mortes: ${myCountry.deaths}</p>
+                    <p>Recuperados: ${myCountry.recovered}</p>
+                </div>
+            `;
+        })
+
+        contentEl1.appendChild(textEl);
+    })
 }

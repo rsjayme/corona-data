@@ -1,0 +1,36 @@
+
+
+.content a:link,
+.content a:visited,
+.content a:hover,
+.content a:active
+{
+    display: block;
+    overflow: hidden;
+}
+
+
+.main {
+    min-height: 450px;
+    font-size: 90%;
+}
+
+.data-container {
+    line-height: 5px;
+}
+
+.data-container h5 {
+    margin-bottom: 20px;
+}
+
+.footer p {
+    text-align: right;
+    font-size: 80%;
+    line-height: 4px;
+}
+
+.data-info {
+    margin-top: 70px;
+    font-size: 90%;
+    display: block;
+}
