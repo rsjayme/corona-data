@@ -30,9 +30,17 @@ const requestData = async () => {
 }
 
 
+const requestCountriesJson = async () => {
+    const responseCountries = await fetch('https://gist.githubusercontent.com/jonasruth/61bde1fcf0893bd35eea/raw/10ce80ddeec6b893b514c3537985072bbe9bb265/paises-gentilicos-google-maps.json');
+    if(responseCountries.status === 200) {
+        const jsonCountries = await responseCountries.json();
+        return jsonCountries;
+    }
+}
+
 const getDataByCountry = (data, countryName) => {
     const myCountry = data.find((data) => {
-        if(data.country === countryName) {
+        if(data.country.toLowerCase() === countryName.toLowerCase()) {
             return data;
         }
     });
@@ -70,7 +78,7 @@ const getTotalRecovered = (data) => {
 const getCountryByLetter = (letter, data) => {
     const filteredList = [];
     data.forEach((data) => {
-        if(data.country[0] === letter) {
+        if(data.country[0].toLowerCase() === letter.toLowerCase()) {
             filteredList.push(data);
         }
     })
@@ -94,17 +102,21 @@ const renderCountryList = (countryList) => {
                     return country;
                 }
             });
-
-            contentEl2.innerHTML = `
-                <div class="data-container">
-                    <h5>${myCountry.country}</h5>
-                    <p>Casos confirmados: ${myCountry.confirmed}</p>
-                    <p>Mortes: ${myCountry.deaths}</p>
-                    <p>Recuperados: ${myCountry.recovered}</p>
-                </div>
-            `;
+            renderCountrySummary(myCountry, contentEl2);
         })
 
         contentEl1.appendChild(textEl);
     })
 }
+
+
+const renderCountrySummary = (countryData, element) => {
+    element.innerHTML  = `
+    <div class="data-container">
+        <h5>${countryData.country}</h5>
+        <p>Casos confirmados: ${countryData.confirmed}</p>
+        <p>Mortes: ${countryData.deaths}</p>
+        <p>Recuperados: ${countryData.recovered}</p>
+    </div>
+`;
+};

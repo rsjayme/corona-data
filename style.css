@@ -9,6 +9,10 @@
     overflow: hidden;
 }
 
+body {
+    color: #777560;
+}
+
 
 .main {
     min-height: 450px;
@@ -29,8 +33,13 @@
     line-height: 4px;
 }
 
+.alert__edit {
+    display: none;
+}
+
 .data-info {
     margin-top: 70px;
     font-size: 90%;
     display: block;
+    text-align: right;
 }
