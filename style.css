@@ -1,16 +1,17 @@
 
-
 .content a:link,
 .content a:visited,
 .content a:hover,
 .content a:active
 {
     display: block;
-    overflow: hidden;
+
 }
 
+
 body {
-    color: #777560;
+    color: #474423;
+    overflow: hidden;
 }
 
 
@@ -43,3 +44,4 @@ body {
     display: block;
     text-align: right;
 }
+

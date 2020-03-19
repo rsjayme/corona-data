@@ -3,26 +3,34 @@ const coronaData = 'https://pomber.github.io/covid19/timeseries.json';
 // add Countryname to object, sort by name, get data only from the last day avaiable;
 const fixData = (data) => {
     let dataArray = Object.values(data);  
-    let newData = [];
+    let newestData = [];
     const countryList = Object.getOwnPropertyNames(data);
     for(let i = 0;i< dataArray.length; i++) {
         //dataArray[i] = dataArray[i].splice(dataArray[i].length-1, 1);
-        newData[i] = dataArray[i][dataArray[i].length-1];
-        newData[i].country = countryList[i];
+        newestData[i] = dataArray[i][dataArray[i].length-1];
+        newestData[i].country = countryList[i];
+        dataArray[i].country = countryList[i];
     }
-    newData.sort((a, b) => {
+
+    newestData.sort((a, b) => {
         if(a.country < b.country) return -1;
         else if(a.country > b.country) return 1;
         else return 0;
     });
-    return newData;    
+
+    const returnObject = {
+        fullData: dataArray,
+        lastData: newestData
+    }
+
+    return returnObject;   
 }
 
 const requestData = async () => {
     const response = await fetch(coronaData);
     if(response.status === 200) {
         const data = await response.json();
-        return fixData(data);
+        return data;
     }
     else {
         throw new Error('Unable to fetch data.');
@@ -120,3 +128,15 @@ const renderCountrySummary = (countryData, element) => {
     </div>
 `;
 };
+
+
+const translateNames = (data, dataNames) => {
+    data.forEach((data) => {
+        dataNames.forEach((dataNames) => {
+            if(data.country === dataNames.nome_pais_int) {
+                data.country = dataNames.nome_pais;
+            }
+        })
+    })
+    return data;
+}
