@@ -1,8 +1,14 @@
 const countryInput = document.querySelector('#countryInput');
 const searchBtn = document.querySelector('#searchBtn');
+const teste = document.querySelector('#containerChart').style.left;
+
+console.log(teste);
+
 // TODO LIST
-// !!!! ARRUMAR OS BOTOES DO NAV BAR
-// Adicionar o campo country_pt em todos os dados
+// !!!! ARRUMAR OS BOTOES DO NAV BAR [x]
+// NEW SEARCH SYSTEM [x]
+// GRAPHS [x]
+// Adicionar o campo country_pt em todos os dados [ ]
 
     // MOSTRAM A MESMA COISA
     //
@@ -18,11 +24,14 @@ const searchBtn = document.querySelector('#searchBtn');
     //     }
     // })
 
+    document.querySelector("#containerChart").style.display = 'block';
 
 requestData().then(async (data) => { 
     data = fixData(data);
-    //const fullData = data.fullData;
-    data = data.lastData;
+        
+    lastData = data.lastData;
+    data = data.fullData;
+
 
 
     const breadCrumbs = document.querySelectorAll('.letterItem');
@@ -34,7 +43,7 @@ requestData().then(async (data) => {
         });
     });
 
-    renderHome(data);
+    renderHome(lastData);
     
 
     countryInput.addEventListener('input', (e) => {  
@@ -42,12 +51,21 @@ requestData().then(async (data) => {
         if(e.target.value)     
             renderCountryList(data, input);
         else
-            renderHome(data);
+            renderHome(lastData);
     });
 
 
     document.querySelector('#alertClose').addEventListener('click', (e) => {
         e.preventDefault();
         document.querySelector('#alert').style.display = 'none';
-    })
-})
+    });
+
+    document.querySelector('#btnCloseChart').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelector('#containerChart').style.left = '-9999px';
+        //document.querySelector('#containerChart').style.visibility = 'hidden';
+    });
+
+});
+
+
