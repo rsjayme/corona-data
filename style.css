@@ -11,6 +11,7 @@
 
 body {
     color: #474423;
+    overflow: hidden;
 }
 
 
@@ -25,10 +26,6 @@ body {
 
 .data-container h5 {
     margin-bottom: 20px;
-}
-
-.button-search {
-    display: none;
 }
 
 .footer p {
