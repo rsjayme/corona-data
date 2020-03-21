@@ -110,19 +110,24 @@ const renderHome = (data) => {
 }
 
 const renderCountryList = (countryList, filter) => {
-    if(!filter) return;
+    let countryListFiltered = [];
     document.querySelector('#title').textContent = 'Lista de paises';
     const contentEl1 = document.querySelector('#col1');
     const contentEl2 = document.querySelector('#col2');
     contentEl1.textContent = '';
-    let countryListFiltered = [];
-
-    countryList.forEach((country) => {
-        if(country.country.toLowerCase().includes(filter.toLowerCase())) {
-            countryListFiltered.push(country);
+        if(filter) {
+            countryList.forEach((country) => {
+                // if(country.country.toLowerCase().includes(filter.toLowerCase())) {
+                //     countryListFiltered.push(country);
+                // }
+                if(stringSearch(country.country, filter)) {
+                    countryListFiltered.push(country);
+                }
+            });
         }
-    });
-
+        else { 
+            countryListFiltered = countryList; 
+        }
 
         countryListFiltered.forEach((country) => {
             const textEl = document.createElement('a');
@@ -143,16 +148,85 @@ const renderCountryList = (countryList, filter) => {
      
 }
 
+const stringSearch = (word, searchWord) => {
+    let matches = 0;
+    for(let i = 0;i < searchWord.length; i++) {
+            if(word[i].toLowerCase() !== searchWord[i].toLowerCase())
+                return false;
+            else matches = matches + 1;
+    }
+    if(matches === searchWord.length) return true;
+}
+
 
 const renderCountrySummary = (countryData, element) => {
+    // CONFIRMED GRAPHS.
+
+    let graphDates = [];
+    let graphConfirmed = [];
+    let graphDeaths = [];
+    let graphRecovered = [];
+
+    countryData.forEach((data) => {
+        if(data.confirmed === 0) return;
+        graphDates.push(data.date);
+        graphConfirmed.push(data.confirmed);
+        graphDeaths.push(data.deaths);
+        graphRecovered.push(data.recovered);
+    })
+    const graphData = {
+        dates: graphDates,
+        confirmed: graphConfirmed,
+        deaths: graphDeaths
+    }
+
+    lastData = countryData[countryData.length-1];
+
     element.innerHTML  = `
     <div class="data-container">
-        <h5>${countryData.country}</h5>
-        <p>Casos confirmados: ${countryData.confirmed}</p>
-        <p>Mortes: ${countryData.deaths}</p>
-        <p>Recuperados: ${countryData.recovered}</p>
+        <h5>${lastData.country}</h5>
+        <p>Casos confirmados: ${lastData.confirmed}</p>
+        <p>Mortes: ${lastData.deaths}</p>
+        <p>Recuperados: ${lastData.recovered}</p>
+        <p><a href="#" id="showGraph">Gráfico</a>
     </div>
 `;
+
+    document.querySelector('#showGraph').addEventListener('click', (e) => {
+        document.querySelector('#containerChart').style.left = '0%';
+        renderGraph(graphDates, graphData, lastData.country);
+    })
+
+
 };
 
+
+const renderGraph = (dates, data, title) => {
+    var trace1 = {
+        x: dates,
+        y: data.confirmed,
+        name: "Casos confirmados",
+        type: 'scatter'
+    };
+
+    var trace2 = {
+        x: dates,
+        y: data.deaths,
+        name: "Mortes",
+        type: 'scatter'
+    };
+    
+    
+    var data = [trace1, trace2];
+    
+    var layout = {
+        title: title,
+        showlegend: false,
+        xaxis: {
+            title: 'Data'
+        }
+    };
+    
+    Plotly.newPlot('chart', data, layout, {displayModeBar: false, responsive: true});
+}
 
