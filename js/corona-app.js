@@ -1,14 +1,15 @@
 const countryInput = document.querySelector('#countryInput');
 const searchBtn = document.querySelector('#searchBtn');
-const teste = document.querySelector('#containerChart').style.left;
-
-console.log(teste);
+const containerChart = document.querySelector('#containerChart');
+let chartIsOpen = false;
 
 // TODO LIST
 // !!!! ARRUMAR OS BOTOES DO NAV BAR [x]
 // NEW SEARCH SYSTEM [x]
 // GRAPHS [x]
-// Adicionar o campo country_pt em todos os dados [ ]
+// FIX MOBILE LAYOUT [X]
+// TENTAR ADICIONAR UM MODO DE COMAPARAÇÃO DE GRÁFICOS []
+// Adicionar o campo country_pt em todos os dados [X]
 
     // MOSTRAM A MESMA COISA
     //
@@ -28,8 +29,10 @@ console.log(teste);
 
 requestData().then(async (data) => { 
     data = fixData(data);
-        
-    lastData = data.lastData;
+    
+    const countriesLanguageData = await requestCountriesJson();
+    data = translateData(data, countriesLanguageData);
+    let lastData = data.lastData;
     data = data.fullData;
 
 
@@ -62,9 +65,11 @@ requestData().then(async (data) => {
 
     document.querySelector('#btnCloseChart').addEventListener('click', (e) => {
         e.preventDefault();
-        document.querySelector('#containerChart').style.left = '-9999px';
+        containerChart.style.left = '-9999px';
         //document.querySelector('#containerChart').style.visibility = 'hidden';
     });
+
+
 
 });
 

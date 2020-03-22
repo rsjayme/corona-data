@@ -9,9 +9,31 @@
 }
 
 
+
 body {
     color: #474423;
 }
+
+.myNav {
+    margin: 0 500px;
+}
+
+.title {
+    margin-bottom: 30px;
+}
+
+
+.data-container h5 {
+    margin-bottom: 30px;
+}
+
+
+.container2 {
+    padding: 8px 22%;
+
+    border-radius: 0%;;
+}
+
 
 
 .main {
@@ -23,9 +45,6 @@ body {
     line-height: 5px;
 }
 
-.data-container h5 {
-    margin-bottom: 20px;
-}
 
 .button-search {
     display: none;
@@ -78,6 +97,11 @@ body {
         top: 5%;
 
     }
+
+    .data-container {
+        line-height: 15px;
+    }
+
     .data-container h5 {
         margin-bottom: 2px;
     }

@@ -46,6 +46,28 @@ const requestCountriesJson = async () => {
     }
 }
 
+const translateData = (data, translateData) => {
+    data.lastData.forEach((data) => {
+        translateData.find((dataTranslate) => {
+            if(dataTranslate.nome_pais_int === data.country) {
+                data.countryPT = dataTranslate.nome_pais
+            }
+        });
+        if(data.country === 'US') data.countryPT = 'Estados Unidos';
+    });
+
+    data.fullData.forEach((data) => {
+        translateData.find((dataTranslate) => {
+            if(dataTranslate.nome_pais_int === data.country) {
+                data.countryPT = dataTranslate.nome_pais
+            }
+        });
+        if(data.country === 'US') data.countryPT = 'Estados Unidos';
+        if(data.country === 'South Africa') data.countryPT = 'África do Sul';
+    });
+    return data;
+}
+
 const getDataByCountry = (data, countryName) => {
     const myCountry = data.find((data) => {
         if(data.country.toLowerCase() === countryName.toLowerCase()) {
@@ -85,8 +107,11 @@ const getTotalRecovered = (data) => {
 
 const getCountryByLetter = (letter, data) => {
     const filteredList = [];
+    let countryName;
     data.forEach((data) => {
-        if(data.country[0].toLowerCase() === letter.toLowerCase()) {
+        if(data.countryPT) countryName = data.countryPT;
+        else countryName = data.country;
+        if(countryName[0].normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase() === letter.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase()) {
             filteredList.push(data);
         }
     })
@@ -101,10 +126,11 @@ const renderHome = (data) => {
     
     const dataDate = new Date(data[0].date);
     const month = ("0" + (dataDate.getMonth() + 1)).slice(-2);
+    document.querySelector('#title').textContent = 'Dados gerais';
     document.querySelector('#col1').innerHTML = `
         <p> Estamos com um total de ${totalConfirmed} casos confirmados no mundo. </p>
-        <p> ${totalRecovered} pessoas se recuperaram.. </p>
-        <p> ${totalDeaths} pessoas que morreram. São ${realDeathsPercent}% de todos os casos concluidos (Recuperados ou mortos).
+        <p> ${totalRecovered} pessoas se recuperaram. </p>
+        <p> ${totalDeaths} pessoas que morreram.
         <span class='data-info'>Dados de ${dataDate.getDate()}/${month}/${dataDate.getFullYear()}</span>
     `;
 }
@@ -114,13 +140,13 @@ const renderCountryList = (countryList, filter) => {
     document.querySelector('#title').textContent = 'Lista de paises';
     const contentEl1 = document.querySelector('#col1');
     const contentEl2 = document.querySelector('#col2');
+    let countryName;
     contentEl1.textContent = '';
         if(filter) {
             countryList.forEach((country) => {
-                // if(country.country.toLowerCase().includes(filter.toLowerCase())) {
-                //     countryListFiltered.push(country);
-                // }
-                if(stringSearch(country.country, filter)) {
+                if(country.countryPT) countryName = country.countryPT;
+                else countryName = country.country;
+                if(stringSearch(countryName, filter)) {
                     countryListFiltered.push(country);
                 }
             });
@@ -131,11 +157,12 @@ const renderCountryList = (countryList, filter) => {
 
         countryListFiltered.forEach((country) => {
             const textEl = document.createElement('a');
-            textEl.textContent = country.country;
+            if(country.countryPT) textEl.textContent = country.countryPT;
+            else textEl.textContent = country.country;
             textEl.setAttribute('href','#');
             textEl.addEventListener('click', (e) => {
                 const myCountry = countryListFiltered.find((country) => {
-                    if(country.country === e.target.text) {
+                    if(country.country === e.target.text || country.countryPT === e.target.text) {
                         return country;
                     }
                 });
@@ -151,7 +178,7 @@ const renderCountryList = (countryList, filter) => {
 const stringSearch = (word, searchWord) => {
     let matches = 0;
     for(let i = 0;i < searchWord.length; i++) {
-            if(word[i].toLowerCase() !== searchWord[i].toLowerCase())
+            if(word[i].normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase() !== searchWord[i].normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase())
                 return false;
             else matches = matches + 1;
     }
@@ -168,7 +195,7 @@ const renderCountrySummary = (countryData, element) => {
     let graphRecovered = [];
 
     countryData.forEach((data) => {
-        if(data.confirmed === 0) return;
+
         graphDates.push(data.date);
         graphConfirmed.push(data.confirmed);
         graphDeaths.push(data.deaths);
@@ -177,14 +204,18 @@ const renderCountrySummary = (countryData, element) => {
     const graphData = {
         dates: graphDates,
         confirmed: graphConfirmed,
-        deaths: graphDeaths
+        deaths: graphDeaths,
+        recovered: graphRecovered
     }
 
     lastData = countryData[countryData.length-1];
+    let countryName;
+    if(lastData.countryPT) countryName = lastData.countryPT;
+    else countryName = lastData.country;
 
     element.innerHTML  = `
     <div class="data-container">
-        <h5>${lastData.country}</h5>
+        <h5>${countryName}</h5>
         <p>Casos confirmados: ${lastData.confirmed}</p>
         <p>Mortes: ${lastData.deaths}</p>
         <p>Recuperados: ${lastData.recovered}</p>
@@ -195,6 +226,7 @@ const renderCountrySummary = (countryData, element) => {
     document.querySelector('#showGraph').addEventListener('click', (e) => {
         document.querySelector('#containerChart').style.left = '0%';
         renderGraph(graphDates, graphData, lastData.country);
+        chartIsOpen = true;
     })
 
 
@@ -205,7 +237,7 @@ const renderGraph = (dates, data, title) => {
     var trace1 = {
         x: dates,
         y: data.confirmed,
-        name: "Casos confirmados",
+        name: "Confirmados",
         type: 'scatter'
     };
 
@@ -215,9 +247,17 @@ const renderGraph = (dates, data, title) => {
         name: "Mortes",
         type: 'scatter'
     };
+
+    var trace3 = {
+        x: dates,
+        y: data.recovered,
+        name: "Recuperados",
+        type: 'scatter'
+    };
     
     
-    var data = [trace1, trace2];
+    
+    var data = [trace1, trace2, trace3];
     
     var layout = {
         title: title,
