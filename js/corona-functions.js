@@ -141,7 +141,7 @@ const renderCountryList = (countryList, filter) => {
     const contentEl1 = document.querySelector('#col1');
     const contentEl2 = document.querySelector('#col2');
     let countryName;
-    contentEl1.textContent = '';
+    contentEl1.textContent = ' ';
         if(filter) {
             countryList.forEach((country) => {
                 if(country.countryPT) countryName = country.countryPT;
