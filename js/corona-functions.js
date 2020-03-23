@@ -1,5 +1,5 @@
-const coronaData = 'https://pomber.github.io/covid19/timeseries.json';
-
+//const coronaData = 'https://pomber.github.io/covid19/timeseries.json';
+const coronaData = 'https://icebob.info/covid19/timeseries.json';
 // add Countryname to object, sort by name, get data only from the last day avaiable;
 const fixData = (data) => {
     let dataArray = Object.values(data);  
